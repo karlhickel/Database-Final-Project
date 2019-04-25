@@ -3,8 +3,13 @@
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <!-- Bootstrap CSS -->
+
+    <!-- Imports CSS -->
+    <link rel="stylesheet" type="text/css" href="/static/financeManager/css/sidenav.css" />
+
+    <!-- External CSS -->
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.5.0/css/all.css" integrity="sha384-B4dIYHKNBt8Bc12p+WXckhzcICo0wtJAoU8YZTY5qE0Id1GSseTk6S+L3BlXeVIU" crossorigin="anonymous">
 
     {% if title %}
       <title>Database Project - {{ title }}</title>
@@ -13,6 +18,33 @@
     {% endif %}
   </head>
   <body>
+    <!-- Side nav source code from https://codepen.io/blindpiggy/pen/QQzRYY -->
+    <div class="primary-nav">
+    	<button href="#" class="hamburger open-panel menu">
+      </button>
+    	<nav role="navigation" class="menu">
+    		<a href="#" class="logotype">Dashboard</a>
+    		<div class="overflow-container">
+    			<ul class="menu-dropdown">
+    				<li><a href="/transactions/">Transactions</a><span class="icon"><i class="fa fa-edit"></i></span></li>
+    				<li class="menu-hasdropdown">
+    					<a href="/analytics/">Analytics</a><span class="icon"><i class="fas fa-chart-bar"></i></span>
+    					<label title="toggle menu" for="settings">
+            <span class="downarrow"><i class="fa fa-caret-down"></i></span>
+          </label>
+    					<input type="checkbox" class="sub-menu-checkbox" id="settings" />
+    					<ul class="sub-menu-dropdown">
+    						<li><a href="">Profile</a></li>
+    						<li><a href="">Security</a></li>
+    						<li><a href="">Account</a></li>
+    					</ul>
+    				</li>
+    				<li><a href="/login/">Log Out</a><span class="icon"><i class="fas fa-sign-out-alt"></i></span></li>
+    			</ul>
+    		</div>
+    	</nav>
+    </div>
+
     <div class="container">
       {% block body %}{% endblock %}
     </div>

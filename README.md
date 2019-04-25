@@ -14,3 +14,6 @@ Pandas:
 ```bash
 pip install pandas
 ```
+## References
+These are a list of references that were used to assist in the making of this web application (mainly styling references):
+- https://codepen.io/blindpiggy/pen/QQzRYY

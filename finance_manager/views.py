@@ -8,16 +8,16 @@ from .static.financeManager.python.forms import LoginForm
 
 
 # create MySQL connection
-conn = SQLManager("mysql", "cpsc408", user="rene", password="databasePass", host="35.199.189.236", debug=False) # SQL
+conn = SQLManager("mysql", "FinalProject", user="rene", password="LNDz8ekX52GgTm5", host="35.199.189.236", debug=False) # SQL
 
 # get path for sql files
 sqlPath = os.path.join(os.getcwd(), "finance_manager", "static", "financeManager", "SQL")
 
 # execute sql
 # conn.execute(os.path.join(sqlPath, "test.sql"))
-data = conn.query("SELECT * from userTable", display=True)
-data = utils.df_to_dict(data)
-print(data)
+# data = conn.query("SELECT * from userTable", display=True)
+# data = utils.df_to_dict(data)
+# print(data)
 
 ### Functions for rendering each page ###
 

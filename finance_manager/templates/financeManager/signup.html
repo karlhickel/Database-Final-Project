@@ -18,18 +18,18 @@
       	<div class="err">
           <ul>
             {% if err.UserName == True %}
-              <li>Cannot find Username!</li>
+              <li>Username already exists!</li>
             {% endif %}
             {% if err.Password == True %}
-              <li>Invalid Password!</li>
+              <li>Passwords don't match!</li>
             {% endif %}
           </ul>
 
         </div>
     {% endif %}
     <div class="box">
-      <h2>Login</h2>
-      <form action="" method="post">
+      <h2>Signup</h2>
+      <form action="#" method="post">
         {% csrf_token %}
         <div class="inputBox">
           {{ form.userName }}
@@ -39,10 +39,12 @@
           {{ form.password }}
           <label>Password</label>
         </div>
-        <input type="submit" name="sign-in" value="Log In" />
-        <a href="{% url 'financeManager:signup-page' %}">
-          <p>Sign Up</p>
-        </a>
+        <div class="inputBox">
+          {{ form.confirmPassword }}
+          <label>Confirm Password</label>
+        </div>
+        <br>
+        <input type="submit" name="sign-in" value="Sign Up">
       </form>
     </div>
   </body>

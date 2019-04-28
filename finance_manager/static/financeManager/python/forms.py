@@ -10,14 +10,35 @@ from django import forms
 # for login.html
 class LoginForm(forms.Form):
     userName = forms.CharField(widget=forms.TextInput(attrs={
-        'placeholder': 'User Name',
         'name': 'userName',
-        'id': 'userName',
-        'class': 'floating'
+        'required': True,
+        'value': '',
+        'class': 'fInput'
     }))
     password = forms.CharField(widget=forms.PasswordInput(attrs={
-        'placeholder': 'Password',
-        'name': 'userName',
-        'id': 'userName',
-        'class': 'floating'
+        'name': 'pass',
+        'required': True,
+        'value': '',
+        'class': 'fInput'
     }))
+
+# for signup.html
+class SignupForm(forms.Form):
+        userName = forms.CharField(widget=forms.TextInput(attrs={
+            'name': 'userName',
+            'required': True,
+            'value': '',
+            'class': 'fInput'
+        }))
+        password = forms.CharField(widget=forms.PasswordInput(attrs={
+            'name': 'pass',
+            'required': True,
+            'value': '',
+            'class': 'fInput'
+        }))
+        confirmPassword = forms.CharField(widget=forms.PasswordInput(attrs={
+            'name': 'confirm',
+            'required': True,
+            'value': '',
+            'class': 'fInput'
+        }))

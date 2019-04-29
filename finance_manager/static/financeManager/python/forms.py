@@ -12,12 +12,14 @@ class LoginForm(forms.Form):
     userName = forms.CharField(widget=forms.TextInput(attrs={
         'name': 'userName',
         'required': True,
+        'autocomplete': 'off',
         'value': '',
         'class': 'fInput'
     }))
     password = forms.CharField(widget=forms.PasswordInput(attrs={
         'name': 'pass',
         'required': True,
+        'autocomplete': 'off',
         'value': '',
         'class': 'fInput'
     }))

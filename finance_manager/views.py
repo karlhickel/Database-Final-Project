@@ -20,12 +20,12 @@ sqlPath = os.path.join(os.getcwd(), "finance_manager", "static", "financeManager
 
 ### Functions for rendering each page ###
 
-data = {'ander428': 'Password1', 'jwanderson198': 'Password1'}
 args = {
     'title': "",
     'form': None,
     'err': {},
-    'UserName': "",
+    'userName': "",
+    'data': {}
 }
 
 # login page
@@ -33,26 +33,22 @@ def login(request):
     global args
     args['title'] = "Login"
 
-    err = {'UserName': False, 'Password': False}
+    err = {}
     if request.method == 'POST':
         form = LoginForm(request.POST)
 
         if form.is_valid():
-            usr = form.cleaned_data['userName']
-            psw = form.cleaned_data['password']
+            # default errors to false
+            err = {'userName': False, 'password': False}
 
-            if usr in data:
-                if data[usr] == psw:
-                    print("Login successful!")
-                    args['UserName'] = usr
-                    return home(request)
-                else:
-                    err['Password'] = True
-                    print("Att:", psw, "Act:", data[usr])
-            else:
-                err['UserName'] = True
-                print("Att:", usr)
-
+            attempt = utils.validLogin(form, conn)
+            if attempt == 0:
+                args['userName'] = form.cleaned_data['userName']
+                return home(request)
+            elif attempt == 1: # userName error
+                err['userName'] = True
+            elif attempt == 2: # password error
+                err['password'] = True
 
     args['form'] = LoginForm()
     args['err'] = err
@@ -61,26 +57,30 @@ def login(request):
 # signup page
 def signup(request):
     global args
-    print(data)
-    err = {'UserName': False, 'Password': False}
+
+    err = {} # stores if fields are valid
     if request.method == 'POST':
-        form = SignupForm(request.POST)
+        form = SignupForm(request.POST) # grabs form
 
         if form.is_valid():
-            usr = form.cleaned_data['userName']
-            psw = form.cleaned_data['password']
-            cfm = form.cleaned_data['confirmPassword']
+            # default errors to false
+            err = {'userName': False, 'password': False}
 
-            if usr not in data:
-                if psw == cfm:
-                    data.setdefault(usr, psw)
-                    print("Account Created")
-                    print(data)
-                else:
-                    err['Password'] = True
-            else:
-                err['UserName'] = True
-                print("Att:", usr)
+            attempt = utils.validSignUp(form, conn)
+            print("ATTEMPT:",attempt)
+            if attempt == 0: # create user
+                conn.execute("INSERT INTO users(userName, password) " +
+                "VALUES('{0}','{1}')".format(
+                    form.cleaned_data['userName'],
+                    form.cleaned_data['password']
+                ))
+                print("Account Created!")
+                return login(request)
+            elif attempt == 1: # userName error
+                err['userName'] = True
+            elif attempt == 2: # password error
+                print("got here")
+                err['password'] = True
 
     args['form'] = SignupForm()
     args['err'] = err
@@ -90,7 +90,7 @@ def signup(request):
 def home(request):
     global args
     args['title'] = "Home"
-    print(args['UserName'])
+    print(args['userName'])
     return render(request, "financeManager/home.html", args)
 
 # analytics page
@@ -103,4 +103,8 @@ def analytics(request):
 def trans(request):
     global args
     args['title'] = "Transactions"
+
+    data = conn.query(os.path.join(sqlPath, "transactions.sql"))
+    trans = utils.df_to_dict(data)
+    args["data"] = trans
     return render(request, "financeManager/transactions.html", args)

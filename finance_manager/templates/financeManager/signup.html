@@ -14,13 +14,13 @@
     {% endif %}
   </head>
   <body>
-    {% if err.UserName == True or err.Password == True %}
+    {% if err.userName == True or err.password == True %}
       	<div class="err">
           <ul>
-            {% if err.UserName == True %}
+            {% if err.userName == True %}
               <li>Username already exists!</li>
             {% endif %}
-            {% if err.Password == True %}
+            {% if err.password == True %}
               <li>Passwords don't match!</li>
             {% endif %}
           </ul>

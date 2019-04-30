@@ -1,5 +1,31 @@
 {% extends "financeManager/parent.html" %}
 {% block body %}
   <h1>Transactions Page!</h1>
-  {{ data }}
+  <h3>
+        Transaction History
+    </h3>
+    <table>
+        <tr>
+            <th>Transaction Amount</th>
+            <th>Date of Transaction</th>
+            <th>Business Name</th>
+            <th>Address of Business</th>
+            <th>State</th>
+        </tr>
+        <tr>
+            <td>$150</td>
+            <td>4/2/19</td>
+            <td>William and Co</td>
+            <td>3454 Lou Way</td>
+            <td>AR</td>
+        </tr>
+        <tr>
+            <td>$150</td>
+            <td>4/2/19</td>
+            <td>William and Co</td>
+            <td>3454 Lou Way</td>
+            <td>AR</td>
+        </tr>
+
+    </table>
 {% endblock body%}

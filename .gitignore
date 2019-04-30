@@ -16,3 +16,9 @@ wheels/
 
 __pycache__/
 *.py[cod]
+.idea/encodings.xml
+.idea/FinalProject.iml
+.idea/misc.xml
+.idea/modules.xml
+.idea/vcs.xml
+.idea/workspace.xml

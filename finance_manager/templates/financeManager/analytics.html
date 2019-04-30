@@ -1,4 +1,35 @@
 {% extends "financeManager/parent.html" %}
 {% block body %}
+  <!-- google charts -->
+  <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+
   <h1>Analytics Page!</h1>
+
+  <div id="piechart"></div>
+
+  <!-- Pie Chart -->
+  <script type="text/javascript">
+    // Load google charts
+    google.charts.load('current', {'packages':['corechart']});
+    google.charts.setOnLoadCallback(drawChart);
+
+    // Draw the chart and set the chart values
+    function drawChart() {
+      // Define the chart to be drawn.
+      var data = new google.visualization.DataTable();
+      data.addColumn('string', 'Element');
+      data.addColumn('number', 'Percentage');
+      {% for key, val in data.pie.items() %}
+        data.addRows([
+          [{{key}}, {{val}}]
+        ]);
+      {% endfor %}
+      // Optional; add a title and set the width and height of the chart
+      var options = {'title':'My Average Day', 'width':550, 'height':400};
+
+      // Display the chart inside the <div> element with id="piechart"
+      var chart = new google.visualization.PieChart(document.getElementById('piechart'));
+      chart.draw(data, options);
+    }
+  </script>
 {% endblock body%}

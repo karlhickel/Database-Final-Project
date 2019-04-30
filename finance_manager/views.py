@@ -123,6 +123,7 @@ def analytics(request):
     global args
 
     if checkLogin():
+        args['data'] = {'pie': {'test1': .4, 'test2': .6}}
         args['title'] = "Analytics"
         return render(request, "financeManager/analytics.html", args)
     else:

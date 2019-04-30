@@ -1,4 +1,5 @@
 {% extends "financeManager/parent.html" %}
+{% load filters %}
 {% block body %}
   <h1>Transactions Page!</h1>
   <h3>
@@ -14,18 +15,21 @@
         </tr>
         <tr>
             <td>$150</td>
-            <td>4/2/19</td>
-            <td>William and Co</td>
-            <td>3454 Lou Way</td>
-            <td>AR</td>
-        </tr>
-        <tr>
             <td>$150</td>
             <td>4/2/19</td>
             <td>William and Co</td>
             <td>3454 Lou Way</td>
             <td>AR</td>
         </tr>
+        {% for i in range %}
+        <tr>
+            <td>$ {{data.amount|index:i}}</td>
+            <td>{{data.DOT|index:i}}</td>
+            <td>{{data.businessName|index:i}}</td>
+            <td>{{data.address|index:i}}</td>
+            <td>{{data.state|index:i}}</td>
+        </tr>
+        {% endfor %}
 
     </table>
 {% endblock body%}

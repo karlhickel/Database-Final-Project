@@ -20,7 +20,8 @@ args = {
     'err': {},
     'userName': "",
     'data': {},
-    'loggedIn': False
+    'loggedIn': False,
+    'range': None
 }
 
 # check if user is logged in
@@ -136,9 +137,13 @@ def trans(request):
     if checkLogin():
         args['title'] = "Transactions"
 
-        data = conn.query("SELECT * FROM transactions WHERE userName = '{}'".format(args['userName']))
+        data = conn.query("SELECT DISTINCT transactions.amount, transactions.DOT, transactions.businessName, businessInfo.address, businessInfo.state " +
+        "FROM transactions, businessInfo WHERE transactions.businessName = businessInfo.businessName " +
+        "AND transactions.userName = '{}'".format(args['userName']))
         trans = utils.df_to_dict(data)
         args["data"] = trans
+        args["range"] = range(0, len(trans['amount']))
+
         return render(request, "financeManager/transactions.html", args)
     else:
         return HttpResponseRedirect('/login/')

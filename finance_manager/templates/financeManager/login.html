@@ -39,9 +39,13 @@
           {{ form.password }}
           <label>Password</label>
         </div>
-        <input type="submit" name="sign-in" value="Log In" />
-        <a href="{% url 'financeManager:signup-page' %}">
+        <div style="text-align: center;">
+          <input type="submit" name="sign-in" value="Log In" style="width: 100%;"/>
+          <a href="{% url 'financeManager:signup-page' %}">
           <p>Sign Up</p>
+        </div>
+
+
         </a>
       </form>
     </div>

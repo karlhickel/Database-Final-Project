@@ -1,6 +1,7 @@
 import os
 from django.conf import settings
 from django.shortcuts import render
+from django.http import HttpResponseRedirect
 from .static.financeManager.python.SQLManager import SQLManager
 from .static.financeManager.python.utils import utils
 from .static.financeManager.python.forms import LoginForm, SignupForm
@@ -12,28 +13,45 @@ conn = SQLManager("mysql", "FinalProject", user="rene", password="LNDz8ekX52GgTm
 # get path for sql files
 sqlPath = os.path.join(os.getcwd(), "finance_manager", "static", "financeManager", "SQL")
 
-# execute sql
-# conn.execute(os.path.join(sqlPath, "test.sql"))
-# data = conn.query("SELECT * from userTable", display=True)
-# data = utils.df_to_dict(data)
-# print(data)
-
-### Functions for rendering each page ###
-
+# global vars
 args = {
     'title': "",
     'form': None,
     'err': {},
     'userName': "",
-    'data': {}
+    'data': {},
+    'loggedIn': False
 }
+
+# check if user is logged in
+def checkLogin():
+    global args
+
+    # set userName to empty if logged out
+    if not args['loggedIn']:
+        args['userName'] = ""
+
+    # don't allow user to be logged in without a userName
+    elif args['loggedIn'] and not args['userName']:
+        args['loggedIn'] = False
+
+    return args['loggedIn']
+
+### Functions for rendering each page ###
 
 # login page
 def login(request):
     global args
-    args['title'] = "Login"
 
-    err = {}
+    err = {} # stores if fields are valid
+
+    # set global vals
+    args['title'] = "Login"
+    args['loggedIn'] = False
+    args['userName'] = ""
+
+    conn.query("SELECT * FROM users", display=True)
+
     if request.method == 'POST':
         form = LoginForm(request.POST)
 
@@ -44,7 +62,8 @@ def login(request):
             attempt = utils.validLogin(form, conn)
             if attempt == 0:
                 args['userName'] = form.cleaned_data['userName']
-                return home(request)
+                args['loggedIn'] = True
+                return HttpResponseRedirect('/transactions/')
             elif attempt == 1: # userName error
                 err['userName'] = True
             elif attempt == 2: # password error
@@ -59,6 +78,12 @@ def signup(request):
     global args
 
     err = {} # stores if fields are valid
+
+    # set global vals
+    args['title'] = "SignUp"
+    args['loggedIn'] = False
+    args['userName'] = ""
+
     if request.method == 'POST':
         form = SignupForm(request.POST) # grabs form
 
@@ -75,7 +100,7 @@ def signup(request):
                     form.cleaned_data['password']
                 ))
                 print("Account Created!")
-                return login(request)
+                return HttpResponseRedirect('/login/')
             elif attempt == 1: # userName error
                 err['userName'] = True
             elif attempt == 2: # password error
@@ -96,15 +121,23 @@ def home(request):
 # analytics page
 def analytics(request):
     global args
-    args['title'] = "Analytics"
-    return render(request, "financeManager/analytics.html", args)
+
+    if checkLogin():
+        args['title'] = "Analytics"
+        return render(request, "financeManager/analytics.html", args)
+    else:
+        return HttpResponseRedirect('/login/')
 
 # transactions page
 def trans(request):
     global args
-    args['title'] = "Transactions"
 
-    data = conn.query(os.path.join(sqlPath, "transactions.sql"))
-    trans = utils.df_to_dict(data)
-    args["data"] = trans
-    return render(request, "financeManager/transactions.html", args)
+    if checkLogin():
+        args['title'] = "Transactions"
+
+        data = conn.query("SELECT * FROM transactions WHERE userName = '{}'".format(args['userName']))
+        trans = utils.df_to_dict(data)
+        args["data"] = trans
+        return render(request, "financeManager/transactions.html", args)
+    else:
+        return HttpResponseRedirect('/login/')

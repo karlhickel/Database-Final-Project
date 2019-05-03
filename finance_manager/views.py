@@ -98,14 +98,13 @@ def signup(request):
                 conn.execute("INSERT INTO users(userName, password) " +
                 "VALUES('{0}','{1}')".format(
                     form.cleaned_data['userName'],
-                    form.cleaned_data['password']
+                    utils.hash(form.cleaned_data['password'])
                 ))
                 print("Account Created!")
                 return HttpResponseRedirect('/login/')
             elif attempt == 1: # userName error
                 err['userName'] = True
             elif attempt == 2: # password error
-                print("got here")
                 err['password'] = True
 
     args['form'] = SignupForm()

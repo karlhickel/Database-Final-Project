@@ -1,4 +1,11 @@
+import hashlib
+
 class utils:
+    # hashes passwords to compare to db
+    def hash(password):
+        result = hashlib.sha224(password.encode())
+        return result.hexdigest()
+
     # converts pandas df to a dictionary
     def df_to_dict(df):
         df.dropna(inplace=True)             # drop null vals to avoid errors
@@ -16,7 +23,7 @@ class utils:
         login = utils.df_to_dict(data)
 
         if login['userName']: # found user
-            if pwd == login['password'][0]: # check password
+            if utils.hash(pwd) == login['password'][0]: # check password
                 print("Login successful!")
                 return 0 # valid
             else: # password doesn't match
@@ -24,7 +31,14 @@ class utils:
         else: # userName not found
             return 1
 
-    # validates sign up
+    # validates sign up        <tr>
+            <td>$150</td>
+            <td>$150</td>
+            <td>4/2/19</td>
+            <td>William and Co</td>
+            <td>3454 Lou Way</td>
+            <td>AR</td>
+        </tr>
     def validSignUp(form, conn):
         # store form data
         usr = form.cleaned_data['userName']

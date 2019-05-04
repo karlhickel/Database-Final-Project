@@ -6,6 +6,11 @@
   <h3>
         Transaction History
     </h3>
+    <form method="get">
+        <button name="downloadCSV" class="coloredButton">
+            Download CSV
+        </button>
+    </form>
     <table>
         <tr>
             <th>Transaction Amount</th>
@@ -25,4 +30,7 @@
         {% endfor %}
 
     </table>
+
+
+
 {% endblock body%}

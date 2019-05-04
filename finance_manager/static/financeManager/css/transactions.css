@@ -1,8 +1,7 @@
 table {
     border-collapse: collapse;
     width: 100%;
-    box-shadow: 6px 6px 10px 6px lightgrey;
-
+    box-shadow: 4px 4px 10px 4px rgba(186, 186, 186, .5);
 }
 
 table th{

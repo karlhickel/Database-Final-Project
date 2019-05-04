@@ -1,16 +1,32 @@
 {% extends "financeManager/parent.html" %}
 {% load filters %}
 {% block body %}
+  <link rel="stylesheet" type="text/css" href="/static/financeManager/css/analytics.css" />
+
   <!-- google charts -->
   <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
 
-  <h1>Analytics Page!</h1>
+  <div class="card header center">
+    <div class="center">
+      Analytics Page!
+    </div>
+  </div>
 
-  <div id="barchart"></div>
+
+  <table class="columns center">
+     <tr>
+       <td><div id="barchart" class="card"></div></td>
+       <td><div id="piechart" class="card"></div></td>
+     </tr>
+   </table>
+
+
+  <!-- charts js -->
   <script type="text/javascript">
     google.charts.load("current", {packages:["corechart"]});
-    google.charts.setOnLoadCallback(drawChart);
-    function drawChart() {
+    google.charts.setOnLoadCallback(drawBarChart);
+    google.charts.setOnLoadCallback(drawPieChart);
+    function drawBarChart() {
       var data = google.visualization.arrayToDataTable([
         ["Element", "Avg", { role: "style" } ],
         ["Negative", {{data.bar.neg}}, "red"],
@@ -34,48 +50,44 @@
 
       var options = {
         title: "Average Transactions",
-        width: 600,
-        height: 400,
+        backgroundColor: 'transparent',
+        width: $(window).width()*.3,
+        height: $(window).height()*.5,
         hAxis: {viewWindow: {
           min: 0,
-          max: max
+          max: max+100
         }},
         bar: {groupWidth: "95%"},
         legend: { position: "none" },
+        isStacked: true
       };
       var chart = new google.visualization.BarChart(document.getElementById("barchart"));
       chart.draw(view, options);
   }
+
+  // Draw the chart and set the chart values
+  function drawPieChart() {
+    // Define the chart to be drawn.
+    var data = new google.visualization.DataTable();
+    data.addColumn('string', 'Element');
+    data.addColumn('number', 'Percentage');
+    {% for i in range %}
+      data.addRows([
+        ["{{data.pie.state|index:i}}", {{data.pie.count|index:i}}]
+      ]);
+    {% endfor %}
+    // Optional; add a title and set the width and height of the chart
+    var options = {
+      title:'Transactions by State',
+      backgroundColor: 'transparent',
+      width: $(window).width()*.3,
+      height: $(window).height()*.5,
+     };
+
+    // Display the chart inside the <div> element with id="piechart"
+    var chart = new google.visualization.PieChart(document.getElementById('piechart'));
+    chart.draw(data, options);
+  }
   </script>
 
-  <!-- Pie Chart -->
-  <div id="piechart"></div>
-  <script type="text/javascript" async>
-    // Load google charts
-    google.charts.load('current', {'packages':['corechart']});
-    google.charts.setOnLoadCallback(drawChart);
-
-    // Draw the chart and set the chart values
-    function drawChart() {
-      // Define the chart to be drawn.
-      var data = new google.visualization.DataTable();
-      data.addColumn('string', 'Element');
-      data.addColumn('number', 'Percentage');
-      {% for i in range %}
-        data.addRows([
-          ["{{data.pie.state|index:i}}", {{data.pie.count|index:i}}]
-        ]);
-      {% endfor %}
-      // Optional; add a title and set the width and height of the chart
-      var options = {
-        'title':'Transactions by State',
-        'width':550,
-        'height':400
-       };
-
-      // Display the chart inside the <div> element with id="piechart"
-      var chart = new google.visualization.PieChart(document.getElementById('piechart'));
-      chart.draw(data, options);
-    }
-  </script>
 {% endblock body%}

@@ -1,7 +1,7 @@
 import os
 from django.conf import settings
 from django.shortcuts import render
-from django.http import HttpResponseRedirect
+from django.http import HttpResponseRedirect, FileResponse
 from .static.financeManager.python.SQLManager import SQLManager
 from .static.financeManager.python.utils import utils
 from .static.financeManager.python.forms import LoginForm, SignupForm
@@ -157,6 +157,11 @@ def trans(request):
                           "FROM transactions, businessInfo WHERE transactions.businessName = businessInfo.businessName  "
                           "AND transactions.userName = '{}'".format(args['userName']))
         trans = utils.df_to_dict(data)
+
+        if request.GET.get('downloadCSV'):
+            filename = args['userName'] + "_transactions.csv"
+            utils.createCSV(fileName, trans)
+
         args["data"] = trans
         args["range"] = range(0, len(trans['amount']))
 

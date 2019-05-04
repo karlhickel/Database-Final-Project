@@ -1,5 +1,7 @@
 table {
     border-collapse: collapse;
+    width: 100%;
+    box-shadow: 6px 6px 10px 6px lightgrey;
 
 }
 

@@ -136,13 +136,31 @@ def trans(request):
     if checkLogin():
         args['title'] = "Transactions"
 
-        data = conn.query("SELECT DISTINCT transactions.amount, transactions.DOT, transactions.businessName, businessInfo.address, businessInfo.state " +
-        "FROM transactions, businessInfo WHERE transactions.businessName = businessInfo.businessName " +
-        "AND transactions.userName = '{}'".format(args['userName']))
+        data = conn.query("SELECT DISTINCT transactions.amount, transactions.DOT, transactions.businessName, businessInfo.address, businessInfo.state "
+                          "FROM transactions, businessInfo WHERE transactions.businessName = businessInfo.businessName  "
+                          "AND transactions.userName = '{}'".format(args['userName']))
         trans = utils.df_to_dict(data)
         args["data"] = trans
         args["range"] = range(0, len(trans['amount']))
 
         return render(request, "financeManager/transactions.html", args)
+    else:
+        return HttpResponseRedirect('/login/')
+
+# account page
+def account(request):
+    global args
+
+    if checkLogin():
+        args['title'] = "Account"
+
+        data = conn.query("SELECT users.fullName, balance.balance, users.creditCard "
+                          "FROM users, balance "
+                          "WHERE users.userName = balance.userName "
+                          "AND users.userName = '{}'".format(args['userName']), display=True)
+        accountInfo = utils.df_to_dict(data)
+        args['data'] = accountInfo
+
+        return render(request, "financeManager/account.html", args)
     else:
         return HttpResponseRedirect('/login/')

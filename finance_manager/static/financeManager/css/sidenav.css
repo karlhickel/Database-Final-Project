@@ -271,11 +271,11 @@ input#menu[type="checkbox"] {
 .openNav .menu:hover {
 	position: absolute;
 	left: -200px;
-	top 73px;
+	top: 73px;
 }
 
 .openNav .menu {
-  top 73px;
+  top: 73px;
 		transform: translate3d(200px, 0, 0);
     transition: transform .45s cubic-bezier(0.77, 0, 0.175, 1);
 }

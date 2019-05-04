@@ -1,0 +1,38 @@
+h1 {
+
+    border-bottom: solid 1px #000000;
+
+}
+
+.test {
+    font-size: 15px;
+	width: 500px;
+	height: 42px;
+	text-align: center;
+	line-height: 42px;
+	letter-spacing: 0.3px;
+	margin-bottom: 20px;
+	border: 1px solid #d2d7df;
+	background-color: lightgrey;
+	border-radius: 42px;
+
+
+}
+
+label {
+	font-size: 14px;
+	letter-spacing: 0.6px;
+	color: #333;
+	display: block;
+	text-transform: uppercase;
+	margin-bottom: 30px;
+	text-align: center
+}
+
+.ProfileFunctions {
+	border-collapse: collapse;
+    width: 30%;
+    box-shadow: 6px 6px 10px 6px grey;
+}
+
+

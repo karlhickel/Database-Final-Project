@@ -32,13 +32,7 @@ class utils:
             return 1
 
     # validates sign up        <tr>
-            <td>$150</td>
-            <td>$150</td>
-            <td>4/2/19</td>
-            <td>William and Co</td>
-            <td>3454 Lou Way</td>
-            <td>AR</td>
-        </tr>
+
     def validSignUp(form, conn):
         # store form data
         usr = form.cleaned_data['userName']

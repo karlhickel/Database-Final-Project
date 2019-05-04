@@ -1,0 +1,28 @@
+{% extends "financeManager/parent.html" %}
+{% block body %}
+
+    <link rel="stylesheet" type="text/css" href="/static/financeManager/css/account.css" />
+
+  <h1>Account</h1>
+    <div class="test">
+    <p>Username: {{ userName }}</p>
+    </div>
+
+    <div class="test">
+        <p>FullName: {{ data.fullName.0 }}</p>
+    </div>
+
+    <div class="test">
+    <p>CrediCard: {{ data.creditCard.0 }}</p>
+    </div>
+
+    <div class="test">
+    <p>Balance: {{ data.balance.0 }}</p>
+    </div>
+
+    <div class="ProfileFunctions">
+        <label>Edit Profile</label> <label>Change User Pic</label> <label>Account Password</label> <label>My Agent Reviews(1)</label>
+    </div>
+
+
+{% endblock body%}

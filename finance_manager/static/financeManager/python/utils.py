@@ -1,4 +1,5 @@
 import hashlib
+import csv
 
 class utils:
     # hashes passwords to compare to db
@@ -50,3 +51,20 @@ class utils:
                 return 2 # passwords don't match
             else:
                 return 0 # valid
+
+    # write csv
+    def createCSV(fileName, dict):
+        columns = []
+
+        for key in dict.keys():
+            columns.append(key)
+
+        filePath = "/static/financeManager/data/" + fileName
+        with open(filePath, 'w') as file:
+            writer = csv.DictWriter(file, fieldnames=columns)
+
+            for i in range(0, len(dict[columns[0]])):
+                row = {}
+                for col in columns:
+                    row[col] = dict[col][i]
+                writer.writerow(row)

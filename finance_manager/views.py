@@ -11,8 +11,8 @@ from .static.financeManager.python.forms import LoginForm, SignupForm
 conn = SQLManager("mysql", "FinalProject", user="rene", password="LNDz8ekX52GgTm5", host="35.199.189.236", debug=False) # SQL
 
 # get path for sql files
-sqlPath = os.path.join(os.getcwd(), "finance_manager", "static", "financeManager", "SQL")
-
+staticPath = os.path.join(os.getcwd(), "finance_manager", "static", "financeManager")
+sqlPath = os.path.join(os.getcwd(), "finance_manager", "static", "financeManager", "sql")
 # global vars
 args = {
     'title': "",
@@ -64,6 +64,8 @@ def login(request):
             if attempt == 0:
                 args['userName'] = form.cleaned_data['userName']
                 args['loggedIn'] = True
+
+                utils.clearData(staticPath)
                 return HttpResponseRedirect('/transactions/')
             elif attempt == 1: # userName error
                 err['userName'] = True
@@ -158,9 +160,11 @@ def trans(request):
                           "AND transactions.userName = '{}'".format(args['userName']))
         trans = utils.df_to_dict(data)
 
-        if request.GET.get('downloadCSV'):
-            filename = args['userName'] + "_transactions.csv"
-            utils.createCSV(fileName, trans)
+        # create downloadable csv
+        filePath = os.path.join(staticPath, "data", "transactions.csv")
+        utils.createCSV(filePath, trans)
+        print("CSV created")
+
 
         args["data"] = trans
         args["range"] = range(0, len(trans['amount']))
@@ -186,3 +190,4 @@ def account(request):
         return render(request, "financeManager/account.html", args)
     else:
         return HttpResponseRedirect('/login/')
+

@@ -1,5 +1,6 @@
 import hashlib
 import csv
+import os
 
 class utils:
     # hashes passwords to compare to db
@@ -53,13 +54,12 @@ class utils:
                 return 0 # valid
 
     # write csv
-    def createCSV(fileName, dict):
+    def createCSV(filePath, dict):
         columns = []
 
         for key in dict.keys():
             columns.append(key)
 
-        filePath = "/static/financeManager/data/" + fileName
         with open(filePath, 'w') as file:
             writer = csv.DictWriter(file, fieldnames=columns)
 
@@ -68,3 +68,14 @@ class utils:
                 for col in columns:
                     row[col] = dict[col][i]
                 writer.writerow(row)
+
+    # delete csvs
+    def clearData(path):
+        transactions = os.path.join(path, "data", "transactions.csv")
+
+        if os.path.isfile(transactions):
+            try:
+                os.remove(transactions)
+                print("file removed")
+            except OSError:
+                pass

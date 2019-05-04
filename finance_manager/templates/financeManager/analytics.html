@@ -1,13 +1,55 @@
 {% extends "financeManager/parent.html" %}
+{% load filters %}
 {% block body %}
   <!-- google charts -->
   <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
 
   <h1>Analytics Page!</h1>
 
-  <div id="piechart"></div>
+  <div id="barchart"></div>
+  <script type="text/javascript">
+    google.charts.load("current", {packages:["corechart"]});
+    google.charts.setOnLoadCallback(drawChart);
+    function drawChart() {
+      var data = google.visualization.arrayToDataTable([
+        ["Element", "Avg", { role: "style" } ],
+        ["Negative", {{data.bar.neg}}, "red"],
+        ["Positive", {{data.bar.pos}}, "green"],
+      ]);
+
+      var view = new google.visualization.DataView(data);
+      view.setColumns([0, 1,
+                       { calc: "stringify",
+                         sourceColumn: 1,
+                         type: "string",
+                         role: "annotation" },
+                       2]);
+
+      // find which value is greater
+      {% if data.bar.pos > data.bar.neg %}
+        var max = {{data.bar.pos}};
+      {% else %}
+        var max = {{data.bar.neg}};
+      {% endif %}
+
+      var options = {
+        title: "Average Transactions",
+        width: 600,
+        height: 400,
+        hAxis: {viewWindow: {
+          min: 0,
+          max: max
+        }},
+        bar: {groupWidth: "95%"},
+        legend: { position: "none" },
+      };
+      var chart = new google.visualization.BarChart(document.getElementById("barchart"));
+      chart.draw(view, options);
+  }
+  </script>
 
   <!-- Pie Chart -->
+  <div id="piechart"></div>
   <script type="text/javascript" async>
     // Load google charts
     google.charts.load('current', {'packages':['corechart']});
@@ -19,13 +61,17 @@
       var data = new google.visualization.DataTable();
       data.addColumn('string', 'Element');
       data.addColumn('number', 'Percentage');
-      {% for key, val in data.pie.items() %}
+      {% for i in range %}
         data.addRows([
-          [{{key}}, {{val}}]
+          ["{{data.pie.state|index:i}}", {{data.pie.count|index:i}}]
         ]);
       {% endfor %}
       // Optional; add a title and set the width and height of the chart
-      var options = {'title':'My Average Day', 'width':550, 'height':400};
+      var options = {
+        'title':'Transactions by State',
+        'width':550,
+        'height':400
+       };
 
       // Display the chart inside the <div> element with id="piechart"
       var chart = new google.visualization.PieChart(document.getElementById('piechart'));

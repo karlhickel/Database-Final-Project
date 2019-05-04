@@ -31,8 +31,7 @@ class utils:
         else: # userName not found
             return 1
 
-    # validates sign up        <tr>
-
+    # validates sign up
     def validSignUp(form, conn):
         # store form data
         usr = form.cleaned_data['userName']

@@ -114,6 +114,7 @@ def signup(request):
 # home page
 def home(request):
     global args
+
     args['title'] = "Home"
     print(args['userName'])
     return render(request, "financeManager/home.html", args)
@@ -123,8 +124,24 @@ def analytics(request):
     global args
 
     if checkLogin():
-        args['data'] = {'pie': {'test1': .4, 'test2': .6}}
+        # call stored procedure of getting transactions by state
+        data = conn.callproc("stateTransactionCount", ['state','count'], args['userName'])
+        data = data.sort_values('count', ascending=False).head(10) # select top 10
+        pie = utils.df_to_dict(data)
+
+        # call stored procedure for average Transactions
+        data = conn.callproc("averageIncomeExpense", ['pos','neg'], args['userName'], display=True)
+        bar = utils.df_to_dict(data)
+
+        # clean data
+        bar['neg'] = round(bar['neg'][0]*-1, 2)
+        bar['pos'] = round(bar['pos'][0], 2)
+
+        # assign data values
         args['title'] = "Analytics"
+        args['range'] = range(0, len(pie['state']))
+        args['data'] = {'pie': pie, 'bar': bar}
+
         return render(request, "financeManager/analytics.html", args)
     else:
         return HttpResponseRedirect('/login/')

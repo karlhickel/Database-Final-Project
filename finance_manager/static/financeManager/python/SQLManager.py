@@ -133,6 +133,25 @@ class SQLManager:
             self.cursor.execute(commands)
             self.conn.commit()
 
+    # call stored procedure
+    def callproc(self, proc, columns, *args, isDML=None, display=None):
+        argv = []
+        for arg in args:
+            argv.append(arg)
+
+        self.cursor.callproc(proc, argv)
+        for i in self.cursor.stored_results():
+            results = i.fetchall()
+        if not isDML:
+            df = pd.DataFrame(results, columns=columns)
+
+            if display:
+                print(df)
+
+            return df
+        else:
+            return
+
     # Create table from csv
     def readCSV(self, csv, name=None):
         df = pd.read_csv(csv)

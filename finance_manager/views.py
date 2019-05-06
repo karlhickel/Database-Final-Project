@@ -159,7 +159,7 @@ def trans(request):
         trans = utils.df_to_dict(data)
 
         if request.GET.get('downloadCSV'):
-            filename = args['userName'] + "_transactions.csv"
+            fileName = args['userName'] + "_transactions.csv"
             utils.createCSV(fileName, trans)
 
         args["data"] = trans

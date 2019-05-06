@@ -2,34 +2,38 @@
 {% load filters %}
 {% block body %}
     <link rel="stylesheet" type="text/css" href="/static/financeManager/css/transactions.css" />
-  <h1>Transactions Page!</h1>
-  <h3>
+    <div class="card center">
+      <div class="header center">
         Transaction History
-    </h3>
+      </div>
+    </div>
     <form method="get">
         <button name="downloadCSV" class="coloredButton">
             Download CSV
         </button>
     </form>
-    <table>
-        <tr>
-            <th>Transaction Amount</th>
-            <th>Date of Transaction</th>
-            <th>Business Name</th>
-            <th>Address of Business</th>
-            <th>State</th>
-        </tr>
-        {% for i in range %}
-        <tr>
-            <td>$ {{data.amount|index:i}}</td>
-            <td>{{data.DOT|index:i}}</td>
-            <td>{{data.businessName|index:i}}</td>
-            <td>{{data.address|index:i}}</td>
-            <td>{{data.state|index:i}}</td>
-        </tr>
-        {% endfor %}
+    <div class="center">
+      <table>
+          <tr>
+              <th>Transaction Amount</th>
+              <th>Date of Transaction</th>
+              <th>Business Name</th>
+              <th>Address of Business</th>
+              <th>State</th>
+          </tr>
+          {% for i in range %}
+          <tr>
+              <td>$ {{data.amount|index:i}}</td>
+              <td>{{data.DOT|index:i}}</td>
+              <td>{{data.businessName|index:i}}</td>
+              <td>{{data.address|index:i}}</td>
+              <td>{{data.state|index:i}}</td>
+          </tr>
+          {% endfor %}
 
-    </table>
+      </table>
+    </div>
+
 
 
 

@@ -179,6 +179,7 @@ def trans(request):
 # account page
 def account(request):
     global args
+    args['isEdit'] = False
 
     if checkLogin():
         args['title'] = "Account"

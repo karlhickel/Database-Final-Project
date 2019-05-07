@@ -171,6 +171,8 @@ def trans(request):
                           "FROM transactions, businessInfo, users WHERE transactions.businessName = businessInfo.businessName  "
                           "AND transactions.userName = '{}'".format(args['userName']))
         trans = utils.df_to_dict(data)
+        for index, val in enumerate(trans['amount']):
+            trans['amount'][index] = format(trans['amount'][index], '.2f')
 
         # create downloadable csv
         filePath = os.path.join(staticPath, "data", "transactions.csv")
@@ -194,6 +196,7 @@ def account(request):
         if "newPass" in args['confirm'].keys():
             confirm = {'newPass': args['confirm']['newPass']}
         print("Confirm", confirm, "Args", args['confirm'])
+
         if request.method == "POST":
             clearNotificatons()
             keys = request.POST.copy().keys()
@@ -241,6 +244,8 @@ def account(request):
                           "WHERE users.userName = balance.userName "
                           "AND users.userName = '{}'".format(args['userName']))
         accountInfo = utils.df_to_dict(data)
+        for index, val in enumerate(accountInfo['balance']):
+            accountInfo['balance'][index] = format(accountInfo['balance'][index], '.2f')
 
         args['data'] = accountInfo
         args['err'] = err

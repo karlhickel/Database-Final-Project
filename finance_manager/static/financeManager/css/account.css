@@ -42,6 +42,11 @@ label {
   width: 50%;
 }
 
+.passwordTable label {
+  width: 50%;
+  float: right;
+}
+
 .update td #submitChanges {
   width: 100%;
   height: 100%;

@@ -264,16 +264,17 @@ def changePassword(request):
             update = request.POST.copy()
             hashUpdate = utils.hash(update['updatePassword'])
 
-            if hashUpdate == password:
-                err['oldPass'] = True
-            if update['updatePassword'] != update['confirmPassword']:
-                err['confirm'] = True
+            if len(update['updatePassword'].strip()) > 0:
+                if hashUpdate == password:
+                    err['oldPass'] = True
+                if update['updatePassword'] != update['confirmPassword']:
+                    err['confirm'] = True
 
-            if len(err.keys()) == 0:
-                confirm['newPass'] = True
-                args['confirm'] = confirm
-                conn.execute("UPDATE users SET password = '{0}' WHERE userName = '{1}'".format(hashUpdate, args["userName"]))
-                return HttpResponseRedirect('/account/')
+                if len(err.keys()) == 0:
+                    confirm['newPass'] = True
+                    args['confirm'] = confirm
+                    conn.execute("UPDATE users SET password = '{0}' WHERE userName = '{1}'".format(hashUpdate, args["userName"]))
+                    return HttpResponseRedirect('/account/')
 
         args['err'] = err
         return render(request, "financeManager/password.html", args)

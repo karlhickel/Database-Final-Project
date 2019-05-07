@@ -12,8 +12,17 @@
             Download CSV
         </button>
     </a>
-    <div class="center">
+    <div class="card center creditCard">
       <table>
+        <tr>
+            <td class="t1">Credit Card #</td>
+            <td class="t2">{{data.creditCard.0}}</td>
+        </tr>
+      </table>
+    </div>
+    <div class="card center tableFixedHeaders">
+      <table>
+        <thead>
           <tr>
               <th>Transaction Amount</th>
               <th>Date of Transaction</th>
@@ -21,7 +30,9 @@
               <th>Address of Business</th>
               <th>State</th>
           </tr>
-          {% for i in range %}
+        </thead>
+        {% for i in range %}
+        <tbody>
           <tr>
               <td>$ {{data.amount|index:i}}</td>
               <td>{{data.DOT|index:i}}</td>
@@ -29,8 +40,8 @@
               <td>{{data.address|index:i}}</td>
               <td>{{data.state|index:i}}</td>
           </tr>
-          {% endfor %}
-
+        </tbody>
+        {% endfor %}
       </table>
     </div>
 

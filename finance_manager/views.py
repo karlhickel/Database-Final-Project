@@ -158,16 +158,14 @@ def trans(request):
     if checkLogin():
         args['title'] = "Transactions"
 
-        data = conn.query("SELECT DISTINCT transactions.amount, transactions.DOT, transactions.businessName, businessInfo.address, businessInfo.state "
-                          "FROM transactions, businessInfo WHERE transactions.businessName = businessInfo.businessName  "
+        data = conn.query("SELECT DISTINCT transactions.amount, transactions.DOT, transactions.businessName, businessInfo.address, businessInfo.state, users.creditCard "
+                          "FROM transactions, businessInfo, users WHERE transactions.businessName = businessInfo.businessName  "
                           "AND transactions.userName = '{}'".format(args['userName']))
         trans = utils.df_to_dict(data)
 
         # create downloadable csv
         filePath = os.path.join(staticPath, "data", "transactions.csv")
         utils.createCSV(filePath, trans)
-        print("CSV created")
-
 
         args["data"] = trans
         args["range"] = range(0, len(trans['amount']))
@@ -179,14 +177,29 @@ def trans(request):
 # account page
 def account(request):
     global args
-    args['isEdit'] = False
 
     if checkLogin():
         args['title'] = "Account"
-        if request.method == "POST" and not args['isEdit']:
-            print("got here")
-            args['isEdit'] = True
-            return render(request, "financeManager/account.html", args)
+        if request.method == "POST":
+            print("got here - ", args['isEdit'])
+            if not args['isEdit']: # clicked edit
+                args['isEdit'] = True
+                return render(request, "financeManager/account.html", args)
+            else: # submit updates
+                args['isEdit'] = False
+                data = conn.query("SELECT fullName, creditCard " +
+                                    "FROM users WHERE userName = '{}'".format(args['userName']))
+                data = utils.df_to_dict(data)
+                update = request.POST.copy()
+                if update['updateUserName'].strip() != "" and update['updateUserName'] != args['userName']:
+                    conn.callproc("updateUserName", "", args['userName'], update['updateUserName'], isDML=True)
+                    args['userName'] = update['updateUserName']
+                if update['updateFullName'].strip() != "" and update['updateFullName'] != data['fullName'][0]:
+                    conn.callproc("updateFullName", "", args['userName'], update['updateFullName'], isDML=True)
+                if update['updateCreditCard'].strip() != "" and update['updateCreditCard'] != data['creditCard'][0]:
+                    conn.callproc("updateCreditCard", "", args['userName'], update['updateCreditCard'], isDML=True)
+
+        args['isEdit'] = False
 
         # grab data from database
         data = conn.query("SELECT users.fullName, balance.balance, users.creditCard "
@@ -196,10 +209,6 @@ def account(request):
         accountInfo = utils.df_to_dict(data)
         args['data'] = accountInfo
 
-
-
         return render(request, "financeManager/account.html", args)
     else:
         return HttpResponseRedirect('/login/')
-
-

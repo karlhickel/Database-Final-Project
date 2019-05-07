@@ -26,12 +26,10 @@ label {
 	border-collapse: collapse;
     width: 100%;
 	padding: 15px;
-    box-shadow: 6px 6px 10px 6px grey;
 }
 
 td {
 	padding: 10px;
-
 }
 
 tr{
@@ -57,4 +55,3 @@ button {
 
 
 }
-

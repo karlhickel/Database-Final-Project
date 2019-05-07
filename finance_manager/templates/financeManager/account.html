@@ -19,7 +19,6 @@
           {% csrf_token %}
             <td>
                 <div class="ProfileFunctions card">
-
                     {% if isEdit %}
                         <label>User Name</label>
                         <input type="text" name="updateUserName" placeholder="{{ userName }}"/>
@@ -28,8 +27,6 @@
                         <label>Credit Card Number </label>
                         <input type="text" name="updateCreditCard" placeholder="{{ data.creditCard.0 }}"/>
                         <button id="submitChanges"> Submit </button>
-
-
                     {% else %}
                         <label>Username: {{ userName }}</label>
                         <label>FullName: {{ data.fullName.0 }}</label>
@@ -45,7 +42,9 @@
                         disabled
                     {% endif %}
                 >Edit Profile</button>
-                   <label>Change User Pic</label> <label>Account Password</label> <label>My Agent Reviews(1)</label>
+                   <label>Change Password</label> 
+                   <label>Account Password</label>
+                   <label>My Agent Reviews(1)</label>
                 </div>
             </td>
           </form>

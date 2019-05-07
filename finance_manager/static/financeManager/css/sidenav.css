@@ -45,6 +45,7 @@ body {
 
 .menu {
 	position: relative;
+  box-shadow: 4px 4px 10px 4px rgba(186, 186, 186, .1);
 }
 
 .menu ul {
@@ -230,11 +231,12 @@ input#menu[type="checkbox"] {
 
 .overflow-container {
   position: relative;
-  height: calc(100vh - 73px)!important;
+  height: calc(100vh - 10px) !important;
   overflow-y: auto;
-  border-top: 73px solid #fff;
+  border-top: 75px solid #fff;
   z-index: -1;
   display:block;
+  box-shadow: 4px 4px 10px 4px rgba(186, 186, 186, .3);
 }
 
 .menu a.logotype {

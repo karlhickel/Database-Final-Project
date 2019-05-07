@@ -1,15 +1,47 @@
-table {
-    border-collapse: collapse;
-    width: 100%;
-    box-shadow: 6px 6px 10px 6px lightgrey;
-
+.creditCard {
+  border: none;
+  width: 50%;
+  color: white;
+  margin: 20px 0px 20px 20px;
+  height: 100%;
+  text-align: center;
+  text-decoration: none;
+  font-size: 16px;
+  box-shadow: 6px 6px 10px 6px rgba(186,186,186, .5);
+  float: right;
 }
 
-table th{
-    text-align: left;
-    background-color: black;
-    color: #ffffff;
-    padding: 10px;
+.creditCard .t1 {
+  padding: 15px;
+  height: inherit;
+  width: 33%;
+  background-color: black;
+}
+
+.creditCard .t2 {
+  padding: 15px;
+  height: inherit;
+  color: black;
+}
+.tableFixedHeaders {
+  overflow-y: auto;
+  overflow-x: hidden;
+  height: 500px;
+  margin-top: 0px;
+}
+
+.tableFixedHeaders th {
+  position: sticky;
+  top: 0;
+  text-align: left;
+  background-color: black;
+  color: #ffffff;
+  padding: 10px;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
 }
 
 table td{
@@ -22,6 +54,7 @@ table td{
     border: none;
     color: white;
     padding: 15px 32px;
+    margin-left: 25px;
     text-align: center;
     text-decoration: none;
     display: inline-block;

@@ -3,26 +3,52 @@
 
     <link rel="stylesheet" type="text/css" href="/static/financeManager/css/account.css" />
 
-  <h1>Account</h1>
-    <div class="test">
-    <p>Username: {{ userName }}</p>
+    <div class="card center">
+    <div class="header center">
+      Account
     </div>
+  </div>
+<div style="
+    width: 100%;
+    margin-left: auto;
+    margin-right: auto;
+">
+    <table style="width: 100%; height: 150%">
+        <tr>
+        {% if isEdit %}
+            <td>
+                <div class="ProfileFunctions card">
+                        <label>Username: {{ userName }}</label>
+                        <label>FullName: {{ data.fullName.0 }}</label>
+                        <label>CrediCard: {{ data.creditCard.0 }}</label>
+                        <label>Balance: {{ data.balance.0 }}</label>
 
-    <div class="test">
-        <p>FullName: {{ data.fullName.0 }}</p>
-    </div>
+                </div>
+            </td>
+            <td>
+               <div class="ProfileFunctions card">
+                <button id="editProfile">Edit Profile</button> <label>Change User Pic</label> <label>Account Password</label> <label>My Agent Reviews(1)</label>
+                </div>
+            </td>
+        {% else %}
+            <td>
+                <div class="ProfileFunctions card">
+                        <label>Username: {{ userName }}</label>
+                        <label>FullName: {{ data.fullName.0 }}</label>
+                        <label>CrediCard: {{ data.creditCard.0 }}</label>
+                        <label>Balance: {{ data.balance.0 }}</label>
 
-    <div class="test">
-    <p>CrediCard: {{ data.creditCard.0 }}</p>
-    </div>
-
-    <div class="test">
-    <p>Balance: {{ data.balance.0 }}</p>
-    </div>
-
-    <div class="ProfileFunctions">
-        <label>Edit Profile</label> <label>Change User Pic</label> <label>Account Password</label> <label>My Agent Reviews(1)</label>
-    </div>
+                </div>
+            </td>
+            <td>
+               <div class="ProfileFunctions card">
+                <button id="editProfile">Edit Profile</button> <label>Change User Pic</label> <label>Account Password</label> <label>My Agent Reviews(1)</label>
+                </div>
+            </td>
+            {% endif %}
+        </tr>
+    </table>
+</div>
 
 
 {% endblock body%}

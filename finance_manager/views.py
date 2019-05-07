@@ -66,7 +66,7 @@ def login(request):
                 args['loggedIn'] = True
 
                 utils.clearData(staticPath)
-                return HttpResponseRedirect('/transactions/')
+                return HttpResponseRedirect('/home/')
             elif attempt == 1: # userName error
                 err['userName'] = True
             elif attempt == 2: # password error
@@ -117,9 +117,11 @@ def signup(request):
 def home(request):
     global args
 
-    args['title'] = "Home"
-    print(args['userName'])
-    return render(request, "financeManager/home.html", args)
+    if checkLogin():
+        args['title'] = "Home"
+        return render(request, "financeManager/home.html", args)
+    else:
+        return HttpResponseRedirect('/login/')
 
 # analytics page
 def analytics(request):
@@ -180,6 +182,7 @@ def account(request):
     if checkLogin():
         args['title'] = "Account"
 
+        # grab data from database
         data = conn.query("SELECT users.fullName, balance.balance, users.creditCard "
                           "FROM users, balance "
                           "WHERE users.userName = balance.userName "
@@ -190,4 +193,10 @@ def account(request):
         return render(request, "financeManager/account.html", args)
     else:
         return HttpResponseRedirect('/login/')
-
+# 
+# def updateAccount(request, data=None):
+#     global args
+#     if request.GET.get('editProfile') and args['userName']:
+#         df = conn.callproc("updateUserName")
+#         update = utils.df_to_dict(df)
+#

@@ -1,7 +1,6 @@
 .card {
   border: 1px solid #ccc;
   width: 100%;
-  margin: 25px;
   border-radius: 10px;
   background-color: transparent;
   box-shadow: 4px 4px 10px 4px rgba(186, 186, 186, .3);
@@ -15,4 +14,24 @@
   width: 100%;
   color: white;
   box-shadow: 6px 6px 10px 6px rgba(186,186,186, .5);
+}
+
+.err {
+  border: 1px solid;
+	margin: 10px 0px;
+	padding: 15px 10px 15px 50px;
+	background-repeat: no-repeat;
+	background-position: 10px center;
+  color: #D63301;
+	background-color: #FFCCBA;
+}
+
+.confirm {
+  border: 1px solid;
+	margin: 10px 0px;
+	padding: 15px 10px 15px 50px;
+	background-repeat: no-repeat;
+	background-position: 10px center;
+  color: #4c7d4c;
+	background-color: #98FB98;
 }

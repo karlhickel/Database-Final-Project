@@ -18,18 +18,34 @@ label {
 	color: #333;
 	display: block;
 	text-transform: uppercase;
-	margin-bottom: 30px;
+  margin-top: 15px;
+	margin-bottom: 15px;
 	text-align: center
 }
 
 .ProfileFunctions {
 	border-collapse: collapse;
-    width: 100%;
+  width: 100%;
 	padding: 15px;
 }
 
-td {
-	padding: 10px;
+.center table {
+  margin-top: 25px;
+}
+
+.update label {
+  margin-top: 0px;
+  margin-bottom: 0px;
+}
+.update td {
+  padding: 10px;
+  width: 50%;
+}
+
+.update td #submitChanges {
+  width: 100%;
+  height: 100%;
+  margin: 0px;
 }
 
 tr{
@@ -43,7 +59,8 @@ button {
 	color: #333;
 	display: block;
 	text-transform: uppercase;
-	margin-bottom: 30px;
+  margin-top: 15px;
+	margin-bottom: 15px;
 	text-align: center;
 
 	background-color: Transparent;
@@ -52,6 +69,4 @@ button {
     cursor:pointer;
     overflow: hidden;
     outline:none;
-
-
 }

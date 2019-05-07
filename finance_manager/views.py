@@ -13,16 +13,18 @@ conn = SQLManager("mysql", "FinalProject", user="rene", password="LNDz8ekX52GgTm
 # get path for sql files
 staticPath = os.path.join(os.getcwd(), "finance_manager", "static", "financeManager")
 sqlPath = os.path.join(os.getcwd(), "finance_manager", "static", "financeManager", "sql")
+
 # global vars
 args = {
     'title': "",
     'form': None,
     'err': {},
+    'confirm': {},
     'userName': "",
     'data': {},
     'loggedIn': False,
     'range': None,
-    'isEdit': False
+    'isEdit': False,
 }
 
 # check if user is logged in
@@ -38,6 +40,13 @@ def checkLogin():
         args['loggedIn'] = False
 
     return args['loggedIn']
+
+# clear notification data
+def clearNotificatons():
+    global args
+
+    args['confirm'] = {}
+    args['err'] = {}
 
 ### Functions for rendering each page ###
 
@@ -180,24 +189,49 @@ def account(request):
 
     if checkLogin():
         args['title'] = "Account"
+        err = {}
+        confirm = {}
+        if "newPass" in args['confirm'].keys():
+            confirm = {'newPass': args['confirm']['newPass']}
+        print("Confirm", confirm, "Args", args['confirm'])
         if request.method == "POST":
-            print("got here - ", args['isEdit'])
-            if not args['isEdit']: # clicked edit
+            clearNotificatons()
+            keys = request.POST.copy().keys()
+            if not args['isEdit'] and "editProfile" in keys: # clicked edit
                 args['isEdit'] = True
                 return render(request, "financeManager/account.html", args)
+            elif "changePassword" in keys:
+                return HttpResponseRedirect('/password/')
             else: # submit updates
                 args['isEdit'] = False
                 data = conn.query("SELECT fullName, creditCard " +
                                     "FROM users WHERE userName = '{}'".format(args['userName']))
                 data = utils.df_to_dict(data)
                 update = request.POST.copy()
-                if update['updateUserName'].strip() != "" and update['updateUserName'] != args['userName']:
-                    conn.callproc("updateUserName", "", args['userName'], update['updateUserName'], isDML=True)
-                    args['userName'] = update['updateUserName']
-                if update['updateFullName'].strip() != "" and update['updateFullName'] != data['fullName'][0]:
-                    conn.callproc("updateFullName", "", args['userName'], update['updateFullName'], isDML=True)
-                if update['updateCreditCard'].strip() != "" and update['updateCreditCard'] != data['creditCard'][0]:
-                    conn.callproc("updateCreditCard", "", args['userName'], update['updateCreditCard'], isDML=True)
+
+                if update['updateUserName'].strip() != "":
+                    userNames = conn.query("SELECT userName FROM users")
+                    userNames = utils.df_to_dict(userNames)
+                    if update['updateUserName'] not in userNames['userName']:
+                        confirm['userName'] = update['updateUserName']
+                        conn.callproc("updateUserName", "", args['userName'], update['updateUserName'], isDML=True)
+                        args['userName'] = update['updateUserName']
+                    else:
+                        err['userName'] = True
+
+                if update['updateFullName'].strip() != "":
+                    if update['updateFullName'] != data['fullName'][0]:
+                        confirm['fullName'] = update['updateFullName']
+                        conn.callproc("updateFullName", "", args['userName'], update['updateFullName'], isDML=True)
+                    else:
+                        err['fullName'] = True
+
+                if update['updateCreditCard'].strip() != "":
+                    if update['updateCreditCard'] != data['creditCard'][0] and len(update['updateCreditCard']) == 16:
+                        confirm['creditCard'] = update['updateCreditCard']
+                        conn.callproc("updateCreditCard", "", args['userName'], update['updateCreditCard'], isDML=True)
+                    else:
+                        err['creditCard'] = True
 
         args['isEdit'] = False
 
@@ -205,10 +239,43 @@ def account(request):
         data = conn.query("SELECT users.fullName, balance.balance, users.creditCard "
                           "FROM users, balance "
                           "WHERE users.userName = balance.userName "
-                          "AND users.userName = '{}'".format(args['userName']), display=True)
+                          "AND users.userName = '{}'".format(args['userName']))
         accountInfo = utils.df_to_dict(data)
+
         args['data'] = accountInfo
+        args['err'] = err
+        args['confirm'] = confirm
 
         return render(request, "financeManager/account.html", args)
+    else:
+        return HttpResponseRedirect('/login/')
+
+# change password page
+def changePassword(request):
+    global args
+
+    if checkLogin():
+        clearNotificatons()
+        err = {}
+        confirm = {}
+        if request.method == "POST" and "submitChanges" in request.POST.copy().keys():
+            data = conn.query("SELECT password FROM users WHERE userName = '{}'".format(args['userName']))
+            password = utils.df_to_dict(data)['password'][0]
+            update = request.POST.copy()
+            hashUpdate = utils.hash(update['updatePassword'])
+
+            if hashUpdate == password:
+                err['oldPass'] = True
+            if update['updatePassword'] != update['confirmPassword']:
+                err['confirm'] = True
+
+            if len(err.keys()) == 0:
+                confirm['newPass'] = True
+                args['confirm'] = confirm
+                conn.execute("UPDATE users SET password = '{0}' WHERE userName = '{1}'".format(hashUpdate, args["userName"]))
+                return HttpResponseRedirect('/account/')
+
+        args['err'] = err
+        return render(request, "financeManager/password.html", args)
     else:
         return HttpResponseRedirect('/login/')

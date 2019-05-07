@@ -21,7 +21,8 @@ args = {
     'userName': "",
     'data': {},
     'loggedIn': False,
-    'range': None
+    'range': None,
+    'isEdit': False
 }
 
 # check if user is logged in
@@ -66,7 +67,7 @@ def login(request):
                 args['loggedIn'] = True
 
                 utils.clearData(staticPath)
-                return HttpResponseRedirect('/home/')
+                return home(request)
             elif attempt == 1: # userName error
                 err['userName'] = True
             elif attempt == 2: # password error
@@ -181,6 +182,10 @@ def account(request):
 
     if checkLogin():
         args['title'] = "Account"
+        if request.method == "POST" and not args['isEdit']:
+            print("got here")
+            args['isEdit'] = True
+            return render(request, "financeManager/account.html", args)
 
         # grab data from database
         data = conn.query("SELECT users.fullName, balance.balance, users.creditCard "
@@ -190,13 +195,10 @@ def account(request):
         accountInfo = utils.df_to_dict(data)
         args['data'] = accountInfo
 
+
+
         return render(request, "financeManager/account.html", args)
     else:
         return HttpResponseRedirect('/login/')
-# 
-# def updateAccount(request, data=None):
-#     global args
-#     if request.GET.get('editProfile') and args['userName']:
-#         df = conn.callproc("updateUserName")
-#         update = utils.df_to_dict(df)
-#
+
+

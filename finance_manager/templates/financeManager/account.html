@@ -15,14 +15,20 @@
 ">
     <table style="width: 100%; height: 150%">
         <tr>
-        {% if isEdit %}
+          <form method="post">
+          {% csrf_token %}
             <td>
                 <div class="ProfileFunctions card">
+
+                    {% if isEdit %}
+                        <h1>is edit mode</h1>
+
+                    {% else %}
                         <label>Username: {{ userName }}</label>
                         <label>FullName: {{ data.fullName.0 }}</label>
                         <label>CrediCard: {{ data.creditCard.0 }}</label>
                         <label>Balance: {{ data.balance.0 }}</label>
-
+                    {% endif %}
                 </div>
             </td>
             <td>
@@ -30,22 +36,7 @@
                 <button id="editProfile">Edit Profile</button> <label>Change User Pic</label> <label>Account Password</label> <label>My Agent Reviews(1)</label>
                 </div>
             </td>
-        {% else %}
-            <td>
-                <div class="ProfileFunctions card">
-                        <label>Username: {{ userName }}</label>
-                        <label>FullName: {{ data.fullName.0 }}</label>
-                        <label>CrediCard: {{ data.creditCard.0 }}</label>
-                        <label>Balance: {{ data.balance.0 }}</label>
-
-                </div>
-            </td>
-            <td>
-               <div class="ProfileFunctions card">
-                <button id="editProfile">Edit Profile</button> <label>Change User Pic</label> <label>Account Password</label> <label>My Agent Reviews(1)</label>
-                </div>
-            </td>
-            {% endif %}
+          </form>
         </tr>
     </table>
 </div>

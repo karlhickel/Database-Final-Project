@@ -21,7 +21,14 @@
                 <div class="ProfileFunctions card">
 
                     {% if isEdit %}
-                        <h1>is edit mode</h1>
+                        <label>User Name</label>
+                        <input type="text" name="updateUserName" placeholder="{{ userName }}"/>
+                        <label>Full Name</label>
+                        <input type="text" name="updateFullName" placeholder="{{ data.fullName.0 }}"/>
+                        <label>Credit Card Number </label>
+                        <input type="text" name="updateCreditCard" placeholder="{{ data.creditCard.0 }}"/>
+                        <button id="submitChanges"> Submit </button>
+
 
                     {% else %}
                         <label>Username: {{ userName }}</label>
@@ -33,13 +40,19 @@
             </td>
             <td>
                <div class="ProfileFunctions card">
-                <button id="editProfile">Edit Profile</button> <label>Change User Pic</label> <label>Account Password</label> <label>My Agent Reviews(1)</label>
+                <button id="editProfile"
+                    {% if isEdit %}
+                        disabled
+                    {% endif %}
+                >Edit Profile</button>
+                   <label>Change User Pic</label> <label>Account Password</label> <label>My Agent Reviews(1)</label>
                 </div>
             </td>
           </form>
         </tr>
     </table>
 </div>
+\
 
 
 {% endblock body%}

@@ -14,7 +14,7 @@
           <li>Name changed to {{ confirm.fullName }}!</li>
         {% endif %}
         {% if confirm.creditCard %}
-          <li>Credit Card changed to {{ confirm.creditCard }}!</li>
+          <li>Credit Card changed to XXXX-XXXX-XXXX-{{ confirm.creditCard }}!</li>
         {% endif %}
         {% if confirm.newPass %}
           <li>Password updated!</li>
@@ -62,11 +62,11 @@
                       </tr>
                       <tr>
                         <td><label>Full Name</label></td>
-                        <td><input type="text" name="updateFullName" placeholder="{{ data.fullName.0 }}"/></td>
+                        <td><input type="text" name="updateFullName" placeholder="Last Name, First Name"/></td>
                       </tr>
                       <tr>
                         <td><label>Credit Card Number </label></td>
-                        <td><input type="text" name="updateCreditCard" placeholder="{{ data.creditCard.0 }}"/></td>
+                        <td><input type="text" name="updateCreditCard" placeholder="XXXX-XXXX-XXXX-XXXX""/></td>
                       </tr>
                       <tr style="bottom: 0px;">
                         <td colspan="2"><button name="submitChanges" style="width: 100%"
@@ -75,9 +75,9 @@
                     </table>
                     {% else %}
                         <label>Username: {{ userName }}</label>
-                        <label>FullName: {{ data.fullName.0 }}</label>
-                        <label>CrediCard: {{ data.creditCard.0 }}</label>
-                        <label>Balance: {{ data.balance.0 }}</label>
+                        <label>FullName: {{ data.fullName }}</label>
+                        <label>CrediCard: XXXX-XXXX-XXXX-{{ data.creditCard }}</label>
+                        <label>Balance: {{ data.balance }}</label>
                     {% endif %}
                 </div>
             </td>

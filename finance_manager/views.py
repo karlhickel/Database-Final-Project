@@ -171,6 +171,7 @@ def trans(request):
                           "FROM transactions, businessInfo, users WHERE transactions.businessName = businessInfo.businessName  "
                           "AND transactions.userName = '{}'".format(args['userName']))
         trans = utils.df_to_dict(data)
+        trans['creditCard'][0] = trans['creditCard'][0][-4:]
         for index, val in enumerate(trans['amount']):
             trans['amount'][index] = format(trans['amount'][index], '.2f')
 
@@ -230,8 +231,12 @@ def account(request):
                         err['fullName'] = True
 
                 if update['updateCreditCard'].strip() != "":
+                    update['updateCreditCard'] = update['updateCreditCard'].strip()
+                    update['updateCreditCard'] = update['updateCreditCard'].replace('-', '')
+
+                    print(update['updateCreditCard'])
                     if update['updateCreditCard'] != data['creditCard'][0] and len(update['updateCreditCard']) == 16:
-                        confirm['creditCard'] = update['updateCreditCard']
+                        confirm['creditCard'] = update['updateCreditCard'][-4:]
                         conn.callproc("updateCreditCard", "", args['userName'], update['updateCreditCard'], isDML=True)
                     else:
                         err['creditCard'] = True
@@ -243,9 +248,12 @@ def account(request):
                           "FROM users, balance "
                           "WHERE users.userName = balance.userName "
                           "AND users.userName = '{}'".format(args['userName']))
+
         accountInfo = utils.df_to_dict(data)
-        for index, val in enumerate(accountInfo['balance']):
-            accountInfo['balance'][index] = format(accountInfo['balance'][index], '.2f')
+
+        accountInfo['fullName'] = accountInfo['fullName'][0]
+        accountInfo['creditCard'] = accountInfo['creditCard'][0][-4:]
+        accountInfo['balance'] = format(accountInfo['balance'][0], '.2f')
 
         args['data'] = accountInfo
         args['err'] = err

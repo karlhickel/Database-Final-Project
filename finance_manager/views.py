@@ -109,8 +109,8 @@ def signup(request):
             attempt = utils.validSignUp(form, conn)
             print("ATTEMPT:",attempt)
             if attempt == 0: # create user
-                conn.execute("INSERT INTO users(userName, password) " +
-                "VALUES('{0}','{1}')".format(
+                conn.execute("INSERT INTO users(userName, password, creditCard) " +
+                "VALUES('{0}','{1}', '0000000000000000')".format(
                     form.cleaned_data['userName'],
                     utils.hash(form.cleaned_data['password'])
                 ))
@@ -232,13 +232,18 @@ def trans(request):
 
         data = conn.query(transactionQuery)
         trans = utils.df_to_dict(data)
+        print(trans)
 
         # if you cant find creditCard
-        if not trans['creditCard']:
+        if "creditCard" not in trans.keys() or len(trans['creditCard']) < 1:
             creditCard = conn.query("SELECT creditCard FROM users WHERE userName = '{}'".format(args['userName']))
             creditCard = utils.df_to_dict(creditCard)['creditCard']
-            trans['creditCard'] = creditCard
-        trans['creditCard'][0] = trans['creditCard'][0][-4:]
+            if creditCard:
+                trans['creditCard'] = creditCard
+                trans['creditCard'][0] = trans['creditCard'][0][-4:]
+        else:
+            trans['creditCard'][0] = trans['creditCard'][0][-4:]
+
 
         for index, val in enumerate(trans['amount']):
             trans['amount'][index] = format(trans['amount'][index], '.2f')
@@ -286,6 +291,8 @@ def account(request):
                 return render(request, "financeManager/account.html", args)
             elif "changePassword" in keys:
                 return HttpResponseRedirect('/password/')
+            elif "deleteAccount" in keys:
+                conn.callproc("deleteUserName", [], args['userName'], isDML=True)
             else: # submit updates
                 args['isEdit'] = False
                 data = conn.query("SELECT fullName, creditCard " +
@@ -328,10 +335,14 @@ def account(request):
         accountInfo = utils.df_to_dict(data)
 
         # clean data
-        accountInfo['fullName'] = accountInfo['fullName'][0]
-        accountInfo['creditCard'] = accountInfo['creditCard'][0][-4:]
-        accountInfo['balance'] = format(accountInfo['balance'][0], '.2f')
-        accountInfo['DOT'] = accountInfo['DOT'][0]
+        if len(accountInfo['fullName']) > 0:
+            accountInfo['fullName'] = accountInfo['fullName'][0]
+        if len(accountInfo['creditCard']) > 0:
+            accountInfo['creditCard'] = accountInfo['creditCard'][0][-4:]
+        if len(accountInfo['balance']) > 0:
+            accountInfo['balance'] = format(accountInfo['balance'][0], '.2f')
+        if len(accountInfo['DOT']) > 0:
+            accountInfo['DOT'] = accountInfo['DOT'][0]
 
         args['data'] = accountInfo
         args['err'] = err

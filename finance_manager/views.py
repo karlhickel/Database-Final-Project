@@ -114,6 +114,7 @@ def signup(request):
                     form.cleaned_data['userName'],
                     utils.hash(form.cleaned_data['password'])
                 ))
+                conn.execute("INSERT INTO balance(userName, balance) VALUES('{}', 0)".format(form.cleaned_data['userName']))
                 print("Account Created!")
                 return HttpResponseRedirect('/login/')
             elif attempt == 1: # userName error

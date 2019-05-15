@@ -181,41 +181,63 @@ def trans(request):
     if checkLogin():
         args['title'] = "Transactions"
 
+        # predefine transactions query
         transactionQuery = str("SELECT DISTINCT transactions.amount, transactions.DOT, transactions.businessName, businessInfo.address, businessInfo.state, users.creditCard "
                            + "FROM transactions, businessInfo, users WHERE transactions.businessName = businessInfo.businessName  "
                            + "AND transactions.userName = '{}' AND transactions.userName = users.userName".format(args['userName']))
 
         selected = {}
-        # filter is submitted
+
+        # filter is submitted OR Transaction added
         if request.method == 'POST':
             keys = request.POST.copy()
-            print(keys)
+
+            # add transaction params
             amount = 0
             businessName = ''
             address = ''
             state = ''
+
+            addBusiness = False
+
             for key, value in keys.items():
                 if value != '':
+                    # insert transactions
                     if key == 'insertAmount':
                         amount = value
                     elif key == 'insertBusinessName':
+                        business = conn.query("SELECT businessName FROM businessInfo")
+                        business = utils.df_to_dict(business)
                         businessName = value
-                    elif key == 'insertBussinessAddress':
+                        if businessName not in business['businessName']:
+                            addBusiness = True
+                    elif key == 'insertBussinessAddress' and addBusiness:
                         address = value
-                    elif key == 'insertState':
+                    elif key == 'insertState' and addBusiness:
                         state = value
+
+                    # filters
                     condition = utils.transactionFilter(key, value)
                     if condition != "":
                         selected[key] = value
                         transactionQuery += condition
-            print(amount)
-            if amount != 0 and businessName != '':
-                conn.callproc("", [], amount, businessName, address, state, args['userName'], isDML=True)
+
+            # send to new transaction to database
+            if amount != 0:
+                conn.callproc("updateTransactions", [], amount, businessName, args['userName'], isDML=True)
+                if addBusiness:
+                    conn.callproc("", [], businessName, address, state, args['userName'], isDML=True)
 
         data = conn.query(transactionQuery)
         trans = utils.df_to_dict(data)
-        if trans['creditCard']:
-            trans['creditCard'][0] = trans['creditCard'][0][-4:]
+
+        # if you cant find creditCard
+        if not trans['creditCard']:
+            creditCard = conn.query("SELECT creditCard FROM users WHERE userName = '{}'".format(args['userName']))
+            creditCard = utils.df_to_dict(creditCard)['creditCard']
+            trans['creditCard'] = creditCard
+        trans['creditCard'][0] = trans['creditCard'][0][-4:]
+
         for index, val in enumerate(trans['amount']):
             trans['amount'][index] = format(trans['amount'][index], '.2f')
 

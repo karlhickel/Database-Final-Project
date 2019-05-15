@@ -33,15 +33,6 @@ label {
   margin-top: 25px;
 }
 
-.update label {
-  margin-top: 0px;
-  margin-bottom: 0px;
-}
-.update td {
-  padding: 10px;
-  width: 50%;
-}
-
 .passwordTable label {
   width: 50%;
   float: right;

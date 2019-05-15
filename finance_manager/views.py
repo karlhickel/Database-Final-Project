@@ -150,8 +150,6 @@ def analytics(request):
         for key,val in bubble.items():
             print(key,":", val)
 
-
-
         # call stored procedure of getting transactions by state
         data = conn.callproc("stateTransactionCount", ['state','count'], args['userName'])
         data = data.sort_values('count', ascending=False).head(10) # select top 10
@@ -191,11 +189,28 @@ def trans(request):
         # filter is submitted
         if request.method == 'POST':
             keys = request.POST.copy()
-            for filter, selection in keys.items():
-                condition = utils.transactionFilter(filter, selection)
-                if condition != "":
-                    selected[filter] = selection
-                    transactionQuery += condition
+            print(keys)
+            amount = 0
+            businessName = ''
+            address = ''
+            state = ''
+            for key, value in keys.items():
+                if value != '':
+                    if key == 'insertAmount':
+                        amount = value
+                    elif key == 'insertBusinessName':
+                        businessName = value
+                    elif key == 'insertBussinessAddress':
+                        address = value
+                    elif key == 'insertState':
+                        state = value
+                    condition = utils.transactionFilter(key, value)
+                    if condition != "":
+                        selected[key] = value
+                        transactionQuery += condition
+            print(amount)
+            if amount != 0 and businessName != '':
+                conn.callproc("", [], amount, businessName, address, state, args['userName'], isDML=True)
 
         data = conn.query(transactionQuery)
         trans = utils.df_to_dict(data)
@@ -285,16 +300,14 @@ def account(request):
         args['isEdit'] = False
 
         # grab data from database
-        data = conn.query("SELECT users.fullName, balance.balance, users.creditCard "
-                          "FROM users, balance "
-                          "WHERE users.userName = balance.userName "
-                          "AND users.userName = '{}'".format(args['userName']))
-
+        data = conn.callproc("viewAccount", ["fullName", "balance", "creditCard", "DOT"], args['userName'])
         accountInfo = utils.df_to_dict(data)
 
+        # clean data
         accountInfo['fullName'] = accountInfo['fullName'][0]
         accountInfo['creditCard'] = accountInfo['creditCard'][0][-4:]
         accountInfo['balance'] = format(accountInfo['balance'][0], '.2f')
+        accountInfo['DOT'] = accountInfo['DOT'][0]
 
         args['data'] = accountInfo
         args['err'] = err

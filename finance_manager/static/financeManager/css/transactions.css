@@ -66,6 +66,10 @@ table {
     margin: 20px;
 }
 
+.update tr {
+  margin: 10px;
+}
+
 .filter {
   background-color: white;
   border: none;

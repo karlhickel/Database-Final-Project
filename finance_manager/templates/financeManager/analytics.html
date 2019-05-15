@@ -17,22 +17,24 @@
      <tr>
        <td><div id="barchart" class="card"></div></td>
        <td><div id="piechart" class="card"></div></td>
+       <td><div id="bubblechart" class="card"></div></td>
      </tr>
    </table>
 
 
   <!-- charts js -->
+  <!-- charts js -->
   <script type="text/javascript">
     google.charts.load("current", {packages:["corechart"]});
     google.charts.setOnLoadCallback(drawBarChart);
     google.charts.setOnLoadCallback(drawPieChart);
+    // google.charts.setOnLoadCallback(drawComboChart);
     function drawBarChart() {
       var data = google.visualization.arrayToDataTable([
         ["Element", "Avg", { role: "style" } ],
         ["Negative", {{data.bar.neg}}, "red"],
         ["Positive", {{data.bar.pos}}, "green"],
       ]);
-
       var view = new google.visualization.DataView(data);
       view.setColumns([0, 1,
                        { calc: "stringify",
@@ -40,14 +42,12 @@
                          type: "string",
                          role: "annotation" },
                        2]);
-
       // find which value is greater
       {% if data.bar.pos > data.bar.neg %}
         var max = {{data.bar.pos}};
       {% else %}
         var max = {{data.bar.neg}};
       {% endif %}
-
       var options = {
         title: "Average Transactions",
         backgroundColor: 'transparent',
@@ -64,29 +64,55 @@
       var chart = new google.visualization.BarChart(document.getElementById("barchart"));
       chart.draw(view, options);
   }
-
   // Draw the chart and set the chart values
-  function drawPieChart() {
-    // Define the chart to be drawn.
+   function drawPieChart() {
+     // Define the chart to be drawn.
+     var data = new google.visualization.DataTable();
+     data.addColumn('string', 'Element');
+     data.addColumn('number', 'Percentage');
+     {% for i in range.pie %}
+       data.addRows([
+         ["{{data.pie.state|index:i}}", {{data.pie.count|index:i}}]
+       ]);
+     {% endfor %}
+
+     var options = {
+       title:'Transactions by State',
+       backgroundColor: 'transparent',
+       width: $(window).width()*.3,
+       height: $(window).height()*.5,
+      };
+     // Display the chart inside the <div> element with id="piechart"
+     var chart = new google.visualization.PieChart(document.getElementById('piechart'));
+     chart.draw(data, options);
+   }
+
+  function drawComboChart() {
+
     var data = new google.visualization.DataTable();
-    data.addColumn('string', 'Element');
-    data.addColumn('number', 'Percentage');
-    {% for i in range %}
+    data.addColumn('string', 'Month')
+    data.addColumn('number', 'Count');
+    data.addColumn('number', 'Amount');
+
+    {% for i in range.bubble %}
       data.addRows([
-        ["{{data.pie.state|index:i}}", {{data.pie.count|index:i}}]
+        ["{{ data.bubble.month|index:i }}/{{ data.bubble.year|index:i }}",
+        {{ data.bubble.amount|index:i }}, {{ data.bubble.count|index:i }}]
       ]);
     {% endfor %}
-    // Optional; add a title and set the width and height of the chart
-    var options = {
-      title:'Transactions by State',
-      backgroundColor: 'transparent',
-      width: $(window).width()*.3,
-      height: $(window).height()*.5,
-     };
 
-    // Display the chart inside the <div> element with id="piechart"
-    var chart = new google.visualization.PieChart(document.getElementById('piechart'));
-    chart.draw(data, options);
+    var options = {
+      title: 'Company Performance',
+          hAxis: {title: 'Year',  titleTextStyle: {color: '#333'}},
+          vAxis: {minValue: 0},
+
+        width: $(window).width()*.3,
+        height: $(window).height()*.5,
+      };
+
+      var chart = new google.visualization.AreaChart(document.getElementById('bubblechart'));
+
+      chart.draw(data, options);
   }
   </script>
 

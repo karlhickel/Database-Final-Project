@@ -79,3 +79,22 @@ class utils:
                 print("file removed")
             except OSError:
                 pass
+
+    # transaction filter
+    def transactionFilter(select, value):
+        if value == "default" or value == "All":
+            return ""
+        # transaction type
+        elif select == 'selectTrans':
+            if value == 'Income':
+                return " AND amount >= 0 "
+            elif value == 'Expense':
+                return " AND amount < 0"
+        # year
+        elif select == "selectYear":
+            return " AND YEAR(DOT) = '{}'".format(value)
+        #state
+        elif select == "selectState":
+            return " AND state = '{}'".format(value)
+
+        return ""

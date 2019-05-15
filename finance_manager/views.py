@@ -1,4 +1,5 @@
 import os
+import datetime
 from django.conf import settings
 from django.shortcuts import render
 from django.http import HttpResponseRedirect, FileResponse
@@ -22,6 +23,7 @@ args = {
     'confirm': {},
     'userName': "",
     'data': {},
+    'file': "",
     'loggedIn': False,
     'range': None,
     'isEdit': False,
@@ -138,14 +140,28 @@ def analytics(request):
     global args
 
     if checkLogin():
+
+        # query bubblechart data
+        data = conn.query("SELECT count(ID) as count, MONTH(DOT) as month, YEAR(DOT) as year, sum(amount) as amount " +
+                        "FROM transactions t, businessInfo b " +
+                        "WHERE userName = 'ander428' AND t.businessName = b.businessName " +
+                        "GROUP BY year, month")
+        bubble = utils.df_to_dict(data)
+        for key,val in bubble.items():
+            print(key,":", val)
+
+
+
         # call stored procedure of getting transactions by state
         data = conn.callproc("stateTransactionCount", ['state','count'], args['userName'])
         data = data.sort_values('count', ascending=False).head(10) # select top 10
         pie = utils.df_to_dict(data)
+        print(pie)
 
         # call stored procedure for average Transactions
         data = conn.callproc("averageIncomeExpense", ['pos','neg'], args['userName'], display=True)
         bar = utils.df_to_dict(data)
+
 
         # clean data
         bar['neg'] = round(bar['neg'][0]*-1, 2)
@@ -153,8 +169,8 @@ def analytics(request):
 
         # assign data values
         args['title'] = "Analytics"
-        args['range'] = range(0, len(pie['state']))
-        args['data'] = {'pie': pie, 'bar': bar}
+        args['range'] = {'pie': range(0, len(pie['state'])), 'bubble': range(0,len(bubble['count']))}
+        args['data'] = {'pie': pie, 'bar': bar, 'bubble': bubble}
 
         return render(request, "financeManager/analytics.html", args)
     else:
@@ -167,20 +183,45 @@ def trans(request):
     if checkLogin():
         args['title'] = "Transactions"
 
-        data = conn.query("SELECT DISTINCT transactions.amount, transactions.DOT, transactions.businessName, businessInfo.address, businessInfo.state, users.creditCard "
-                          "FROM transactions, businessInfo, users WHERE transactions.businessName = businessInfo.businessName  "
-                          "AND transactions.userName = '{}'".format(args['userName']))
+        transactionQuery = str("SELECT DISTINCT transactions.amount, transactions.DOT, transactions.businessName, businessInfo.address, businessInfo.state, users.creditCard "
+                           + "FROM transactions, businessInfo, users WHERE transactions.businessName = businessInfo.businessName  "
+                           + "AND transactions.userName = '{}' AND transactions.userName = users.userName".format(args['userName']))
+
+        selected = {}
+        # filter is submitted
+        if request.method == 'POST':
+            keys = request.POST.copy()
+            for filter, selection in keys.items():
+                condition = utils.transactionFilter(filter, selection)
+                if condition != "":
+                    selected[filter] = selection
+                    transactionQuery += condition
+
+        data = conn.query(transactionQuery)
         trans = utils.df_to_dict(data)
-        trans['creditCard'][0] = trans['creditCard'][0][-4:]
+        if trans['creditCard']:
+            trans['creditCard'][0] = trans['creditCard'][0][-4:]
         for index, val in enumerate(trans['amount']):
             trans['amount'][index] = format(trans['amount'][index], '.2f')
 
         # create downloadable csv
-        filePath = os.path.join(staticPath, "data", "transactions.csv")
+        d = datetime.datetime.today()
+        fileName = "transactions_{}.csv".format(d.isoformat())
+        filePath = os.path.join(staticPath, "data", fileName)
         utils.createCSV(filePath, trans)
 
-        args["data"] = trans
+        # query distinct years and states for filter
+        years = conn.query("SELECT DISTINCT YEAR(DOT) as year FROM transactions")
+        years = utils.df_to_dict(years)
+        yearSet = set(years['year'])
+        states = conn.query("SELECT DISTINCT state FROM businessInfo, transactions WHERE userName = '{}'".format(args['userName']) +
+        " AND transactions.businessName = businessInfo.businessName")
+        states = utils.df_to_dict(states)
+        stateSet = sorted(set(states['state']))
+
+        args["data"] = {"trans": trans, "years": yearSet, "states": stateSet, "selected": selected}
         args["range"] = range(0, len(trans['amount']))
+        args["file"] = fileName
 
         return render(request, "financeManager/transactions.html", args)
     else:

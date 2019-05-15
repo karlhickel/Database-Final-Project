@@ -44,9 +44,10 @@ table {
   border-collapse: collapse;
 }
 
-table td{
-    border: 1px solid black;
-    padding: 4px 8px;
+.padding td {
+    border: 1px solid black !important;
+    padding: 4px 8px !important;
+    height: inherit;
 }
 
 .coloredButton{
@@ -63,4 +64,25 @@ table td{
     cursor: pointer;
     box-shadow: 6px 6px 10px 6px rgba(186,186,186, .5);
     margin: 20px;
+}
+
+.filter {
+  background-color: white;
+  border: none;
+  padding: 15px 32px;
+  margin-left: 25px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 16px;
+  margin: 4px 2px;
+  cursor: pointer;
+  border: 1px solid black;
+  box-shadow: 6px 6px 10px 6px rgba(186,186,186, .5);
+  margin: 20px;
+}
+
+.noPadding td {
+  border: none;
+  padding: 0;
 }

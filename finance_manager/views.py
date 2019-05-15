@@ -208,8 +208,9 @@ def trans(request):
                     elif key == 'insertBusinessName':
                         business = conn.query("SELECT businessName FROM businessInfo")
                         business = utils.df_to_dict(business)
-                        businessName = value
-                        if businessName not in business['businessName']:
+
+                        if value not in business['businessName']:
+                            businessName = value
                             addBusiness = True
                     elif key == 'insertBussinessAddress' and addBusiness:
                         address = value
@@ -226,7 +227,7 @@ def trans(request):
             if amount != 0:
                 conn.callproc("updateTransactions", [], amount, businessName, args['userName'], isDML=True)
                 if addBusiness:
-                    conn.callproc("", [], businessName, address, state, args['userName'], isDML=True)
+                    conn.callproc("updateInsertBusiness", [], businessName, address, state, isDML=True)
 
         data = conn.query(transactionQuery)
         trans = utils.df_to_dict(data)

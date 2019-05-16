@@ -41,6 +41,8 @@ pip install mysql.connector
 | 11. Enforce referential integrality (Constraints)  | DatabaseCreation.sql (Lines 1-39) |
 | 12. Include Database Views, Indexes | DatabaseCreation.sql (Lines 143-152) - view, DatabaseCreation.sql (Lines 93-94) - index |
 
+## Database Schema
+[Schema Img](https://raw.githubusercontent.com/karlhickel/Database-Final-Project/blob/master/Database/Schema.png)
 
 
 ## Directories/Files with SQL queries

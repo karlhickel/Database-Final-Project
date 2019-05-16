@@ -69,7 +69,7 @@
      var data = new google.visualization.DataTable();
      data.addColumn('string', 'Element');
      data.addColumn('number', 'Percentage');
-     {% for i in range.pie %}
+     {% for i in range %}
        data.addRows([
          ["{{data.pie.state|index:i}}", {{data.pie.count|index:i}}]
        ]);

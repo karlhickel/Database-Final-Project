@@ -164,8 +164,8 @@ def analytics(request):
 
         # assign data values
         args['title'] = "Analytics"
-        args['range'] = {'pie': range(0, len(pie['state'])), 'bubble': range(0,len(bubble['count']))}
-        args['data'] = {'pie': pie, 'bar': bar, 'bubble': bubble}
+        args['range'] = range(0, len(pie['state']))
+        args['data'] = {'pie': pie, 'bar': bar}
 
         return render(request, "financeManager/analytics.html", args)
     else:

@@ -42,7 +42,7 @@ pip install mysql.connector
 | 12. Include Database Views, Indexes | DatabaseCreation.sql (Lines 143-152) - view, DatabaseCreation.sql (Lines 93-94) - index |
 
 ## Database Schema
-[Schema Img](https://raw.githubusercontent.com/karlhickel/Database-Final-Project/blob/master/Database%20Files/Schema.png)
+![Schema Img](https://raw.githubusercontent.com/karlhickel/Database-Final-Project/blob/master/Database%20Files/Schema.png)
 
 
 ## Directories/Files with SQL queries

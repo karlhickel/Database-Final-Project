@@ -136,6 +136,7 @@ class SQLManager:
     # call stored procedure
     def callproc(self, proc, columns, *args, isDML=None, display=None):
         argv = []
+        results = None
         for arg in args:
             argv.append(arg)
 

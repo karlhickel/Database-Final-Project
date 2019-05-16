@@ -7,7 +7,6 @@ from .static.financeManager.python.SQLManager import SQLManager
 from .static.financeManager.python.utils import utils
 from .static.financeManager.python.forms import LoginForm, SignupForm
 
-
 # create MySQL connection
 conn = SQLManager("mysql", "FinalProject", user="rene", password="LNDz8ekX52GgTm5", host="35.199.189.236", debug=False) # SQL
 
@@ -63,8 +62,6 @@ def login(request):
     args['loggedIn'] = False
     args['userName'] = ""
 
-    conn.query("SELECT * FROM users", display=True)
-
     if request.method == 'POST':
         form = LoginForm(request.POST)
 
@@ -72,6 +69,7 @@ def login(request):
             # default errors to false
             err = {'userName': False, 'password': False}
 
+            # check for valid login
             attempt = utils.validLogin(form, conn)
             if attempt == 0:
                 args['userName'] = form.cleaned_data['userName']
@@ -109,13 +107,23 @@ def signup(request):
             attempt = utils.validSignUp(form, conn)
             print("ATTEMPT:",attempt)
             if attempt == 0: # create user
-                conn.execute("INSERT INTO users(userName, password, creditCard) " +
-                "VALUES('{0}','{1}', '0000000000000000')".format(
-                    form.cleaned_data['userName'],
-                    utils.hash(form.cleaned_data['password'])
-                ))
-                conn.execute("INSERT INTO balance(userName, balance) VALUES('{}', 0)".format(form.cleaned_data['userName']))
-                print("Account Created!")
+
+                # create user and set default creditCard
+                # ROLLBACK
+                try:
+                    conn.execute(
+                    "START TRANSACTION BEGIN" +
+                        "INSERT INTO users(userName, password, creditCard) " +
+                        "VALUES('{0}','{1}', '0000000000000000')".format(
+                            form.cleaned_data['userName'],
+                            utils.hash(form.cleaned_data['password'])
+                        ) +
+                        "INSERT INTO balance(userName, balance) VALUES('{}', 0)".format(form.cleaned_data['userName']) +
+                    "COMMIT"
+                    )
+                    print("Account Created!")
+                except Exception:
+                    conn.getCursor().rollback()
                 return HttpResponseRedirect('/login/')
             elif attempt == 1: # userName error
                 err['userName'] = True
@@ -141,16 +149,6 @@ def analytics(request):
     global args
 
     if checkLogin():
-
-        # query bubblechart data
-        data = conn.query("SELECT count(ID) as count, MONTH(DOT) as month, YEAR(DOT) as year, sum(amount) as amount " +
-                        "FROM transactions t, businessInfo b " +
-                        "WHERE userName = 'ander428' AND t.businessName = b.businessName " +
-                        "GROUP BY year, month")
-        bubble = utils.df_to_dict(data)
-        for key,val in bubble.items():
-            print(key,":", val)
-
         # call stored procedure of getting transactions by state
         data = conn.callproc("stateTransactionCount", ['state','count'], args['userName'])
         data = data.sort_values('count', ascending=False).head(10) # select top 10
@@ -225,10 +223,13 @@ def trans(request):
                         transactionQuery += condition
 
             # send to new transaction to database
-            if amount != 0:
-                conn.callproc("updateTransactions", [], amount, businessName, args['userName'], isDML=True)
-                if addBusiness:
-                    conn.callproc("updateInsertBusiness", [], businessName, address, state, isDML=True)
+            try:
+                if amount != 0:
+                    conn.callproc("updateTransactions", [], amount, businessName, args['userName'], isDML=True)
+                    if addBusiness:
+                        conn.callproc("updateInsertBusiness", [], businessName, address, state, isDML=True)
+            except Exception:
+                conn.getCursor().rollback()
 
         data = conn.query(transactionQuery)
         trans = utils.df_to_dict(data)
@@ -255,7 +256,7 @@ def trans(request):
         utils.createCSV(filePath, trans)
 
         # query distinct years and states for filter
-        years = conn.query("SELECT DISTINCT YEAR(DOT) as year FROM transactions")
+        years = conn.query("SELECT * FROM yearFilter")
         years = utils.df_to_dict(years)
         yearSet = set(years['year'])
         states = conn.query("SELECT DISTINCT state FROM businessInfo, transactions WHERE userName = '{}'".format(args['userName']) +
@@ -293,6 +294,9 @@ def account(request):
                 return HttpResponseRedirect('/password/')
             elif "deleteAccount" in keys:
                 conn.callproc("deleteUserName", [], args['userName'], isDML=True)
+                args['userName'] = ''
+                args['loggedIn'] = False
+                return HttpResponseRedirect("/login/")
             else: # submit updates
                 args['isEdit'] = False
                 data = conn.query("SELECT fullName, creditCard " +
@@ -360,12 +364,15 @@ def changePassword(request):
         clearNotificatons()
         err = {}
         confirm = {}
+
+        # check for submit changes
         if request.method == "POST" and "submitChanges" in request.POST.copy().keys():
             data = conn.query("SELECT password FROM users WHERE userName = '{}'".format(args['userName']))
             password = utils.df_to_dict(data)['password'][0]
             update = request.POST.copy()
             hashUpdate = utils.hash(update['updatePassword'])
 
+            # check password integrity
             if len(update['updatePassword'].strip()) > 0:
                 if hashUpdate == password:
                     err['oldPass'] = True

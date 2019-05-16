@@ -105,7 +105,6 @@ def signup(request):
             err = {'userName': False, 'password': False}
 
             attempt = utils.validSignUp(form, conn)
-            print("ATTEMPT:",attempt)
             if attempt == 0: # create user
 
                 # create user and set default creditCard
@@ -153,7 +152,6 @@ def analytics(request):
         data = conn.callproc("stateTransactionCount", ['state','count'], args['userName'])
         data = data.sort_values('count', ascending=False).head(10) # select top 10
         pie = utils.df_to_dict(data)
-        print(pie)
 
         # call stored procedure for average Transactions
         data = conn.callproc("averageIncomeExpense", ['pos','neg'], args['userName'], display=True)
@@ -233,7 +231,6 @@ def trans(request):
 
         data = conn.query(transactionQuery)
         trans = utils.df_to_dict(data)
-        print(trans)
 
         # if you cant find creditCard
         if "creditCard" not in trans.keys() or len(trans['creditCard']) < 1:
@@ -282,7 +279,6 @@ def account(request):
         confirm = {}
         if "newPass" in args['confirm'].keys():
             confirm = {'newPass': args['confirm']['newPass']}
-        print("Confirm", confirm, "Args", args['confirm'])
 
         if request.method == "POST":
             clearNotificatons()
@@ -325,7 +321,6 @@ def account(request):
                     update['updateCreditCard'] = update['updateCreditCard'].strip()
                     update['updateCreditCard'] = update['updateCreditCard'].replace('-', '')
 
-                    print(update['updateCreditCard'])
                     if update['updateCreditCard'] != data['creditCard'][0] and len(update['updateCreditCard']) == 16:
                         confirm['creditCard'] = update['updateCreditCard'][-4:]
                         conn.callproc("updateCreditCard", "", args['userName'], update['updateCreditCard'], isDML=True)

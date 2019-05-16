@@ -23,12 +23,11 @@
 
 
   <!-- charts js -->
-  <!-- charts js -->
   <script type="text/javascript">
     google.charts.load("current", {packages:["corechart"]});
     google.charts.setOnLoadCallback(drawBarChart);
     google.charts.setOnLoadCallback(drawPieChart);
-    // google.charts.setOnLoadCallback(drawComboChart);
+
     function drawBarChart() {
       var data = google.visualization.arrayToDataTable([
         ["Element", "Avg", { role: "style" } ],
@@ -86,34 +85,6 @@
      var chart = new google.visualization.PieChart(document.getElementById('piechart'));
      chart.draw(data, options);
    }
-
-  function drawComboChart() {
-
-    var data = new google.visualization.DataTable();
-    data.addColumn('string', 'Month')
-    data.addColumn('number', 'Count');
-    data.addColumn('number', 'Amount');
-
-    {% for i in range.bubble %}
-      data.addRows([
-        ["{{ data.bubble.month|index:i }}/{{ data.bubble.year|index:i }}",
-        {{ data.bubble.amount|index:i }}, {{ data.bubble.count|index:i }}]
-      ]);
-    {% endfor %}
-
-    var options = {
-      title: 'Company Performance',
-          hAxis: {title: 'Year',  titleTextStyle: {color: '#333'}},
-          vAxis: {minValue: 0},
-
-        width: $(window).width()*.3,
-        height: $(window).height()*.5,
-      };
-
-      var chart = new google.visualization.AreaChart(document.getElementById('bubblechart'));
-
-      chart.draw(data, options);
-  }
   </script>
 
 {% endblock body%}

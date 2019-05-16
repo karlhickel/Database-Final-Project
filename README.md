@@ -9,7 +9,9 @@ This is a Django web server project. In order to run on a local machine you *mus
 ```bash
 python manage.py runserver
 ```
-## Packages
+## Required Packages
+Django can run on several different versions of python, but to ensure that the project runs smoothly, ***please use python 3.x***. We ran this project with python 3.5.
+
 Python Django:
 ```bash
 pip install django
